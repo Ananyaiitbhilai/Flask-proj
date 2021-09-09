@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>City Page</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <style type="text/css">
+    .alert{
+      background-color: orange;
+    }
+      #selectCityRecommendation{
+        text-align: center;
+        font-size: 1.2em;
+        color: #222222;
+      }
+
+      #selectedCity{
+        margin-left: 5%;
+        margin-bottom: 2%;
+      }
+      div.svg-container{
+        height:500px;
+      }
+
+      #eventButton{
+        font-size: 1.1em;
+
+      }
+      #usMap{
+        height:400px;
+      }
+
+      #predictedInsights {
+          background-color: #00FFFF;
+          margin-top: 2%;
+          margin-bottom: 2%;
+          width: 710px;
+          height: 350px;
+          overflow: scroll;
+      }
+     
+    </style>
+</head>
+    <body>
+    <br>
+              
+        
+
+  
+
+<!-- #container for tabs -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8">
+      <ul class="nav nav-tabs" >
+        <li class="active" ><a data-target="#home" data-toggle="tab" id="comparisonTab" style = "color:#000333;">Predicted insights</a></li>
+        <li><a data-target="#profile" data-toggle="tab" id="mapViewTab" style = "color:#000333;">Lowest Cost Comparison</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane active" id="home">
+          <div class="container">
+            <a href="#" data-toggle="tooltip" title="Predicted price based of Sambre, lowest flight price powered by google flight. as of Aug 10, 2016">More Info</a>
+          </div>
+          <div id="predictedInsights"></div>
+        </div>
+          <div class="tab-pane" id="profile"><div id="usMap"></div>
+        </div>
+      </div>
+    </div>
+
+<!-- wikipedia info box -->
+<div class="col-sm-4">
+  <div class="thumbnail">
+    <div class="caption">
+      <h3>{{city.origin_airport}} <span class="glyphicon glyphicon-chevron-right"></span> {{city.destination_airport}}</h3>
+      <p>{{city.destination_info}}</p>
+    </div>
+  </div>      
+</div>
+</div>
+</div>
+    <br>
+
+
+
+<script>
+
+// preditive insights d3 
+var city = ['Raipur', 'Kolkata', 'Bhubaneshwar','Surat' ,'Lucknow','Pune' ,'Guwahati','Ranchi','Mumbai','Dehradun' ,'Vishakhapatnam','New Delhi','Banglore','Port Blair','Bhopal','Indore','Panaji','Hyderabad' ,'Ahemdabad','Chandigarh','Shimla' ,'Ladhak','Chennai' ,'Jaipur','Jammu'];
+
+var actLowestFlight = ['1500','4040.00','1500.00','2540','3000','4100','4000','3200','4200','4000','2000','4550','1500','3300','3040','4000','1600','750','2560','4200','5500','6080','420','3000','5000'];
+
+var estLowestFare = [
+'3000','6900','3200','3000','4060','6500','5000','4000','6500','5000','3000','7350','2000','4000','5530','5750','3000','1000','3000','6000','7500','7900','800','4300','7500'];
+
+var trace1 = {
+  type: 'scatter',
+  x: actLowestFlight,
+  y: city,
+  mode: 'markers',
+  name: 'Current Lowest Fare',
+  marker: {
+    color: '(91,192,222)',
+    line: {
+      color: '(91,192,222)',
+      width: 1,
+    },
+    symbol: 'circle',
+    size: 10
+  }
+};
+
+var trace2 = {
+  x: estLowestFare ,
+  y: city,
+  mode: 'markers',
+  name: 'Estimated Lowest Fare',
+  marker: {
+    color: 'rgba(255, 64, 0)',
+    line: {
+      color: 'rgb(255,167, 0)',
+      width: 1,
+    },
+    symbol: 'square',
+    size: 10
+  }
+};
+
+var data = [trace1, trace2];
+
+var layout = {
+  title: 'Estimated Lowest Fare and Predicted Lowest Fare',
+  xaxis: {
+    showgrid: false,
+    showline: true,
+    linecolor: 'rgb(102, 102, 102)',
+    titlefont: {
+      font: {
+        color: 'rgb(204, 204, 204)'
+      }
+    },
+    tickfont: {
+      font: {
+        color: 'rgb(102, 102, 102)'
+      }
+    },
+    autotick: false,
+    dtick: 50,
+    ticks: 'outside',
+    tickcolor: 'rgb(102, 102, 102)'
+  },
+  margin: {
+    l: 140,
+    r: 40,
+    b: 50,
+    t: 80
+  },
+  legend: {
+    font: {
+      size: 10,
+    },
+    yanchor: 'middle',
+    xanchor: 'center'
+  },
+  width: 710,
+  height: 800,
+  paper_bgcolor: 'rgb(249,249,249)',
+  plot_bgcolor: 'rgb  (249,249,249)',
+  hovermode: 'closest'
+};
+
+Plotly.newPlot('predictedInsights', data, layout);
+
+
+
+// ===================================================================
+
+// Lowest Cost Comparison d3
+    Plotly.d3.csv('https://raw.githubusercontent.com/Ananyaiitbhilai/proj/master/templates/flight_info.csv', function(err, rows){
+      function unpack(rows, key) {
+          return rows.map(function(row) { return row[key]; });
+      }
+
+    var cityName = unpack(rows, 'name'),
+        cityFare = unpack(rows, 'fare'),
+        cityLat = unpack(rows, 'lat'),
+        cityLon = unpack(rows, 'long'),
+        color = [,"rgb(255,65,54)","rgb(133,20,75)","rgb(255,133,27)","lightgrey"],
+        citySize = [],
+        hoverText = [],
+        scale = 20;
+
+    for ( var i = 0 ; i < cityFare.length; i++) {
+      var currentSize = cityFare[i] / scale;
+      var currentText = cityName[i] + "<br>Lowest Fare: $" + cityFare[i];
+      citySize.push(currentSize);
+      hoverText.push(currentText);
+    }
+
+
+    var data = [{
+        type: 'scattergeo',
+        locationmode: 'India-cities',
+        lat: cityLat,
+        lon: cityLon,
+        text: hoverText,
+        hoverinfo: 'text',
+        marker: {
+            size: citySize,
+            line: {
+                color: 'black',
+                width: 2
+            },
+        }
+    }];
+
+    var layout = {
+        title: 'Current Lowest Fares out of SFO',
+        showlegend: false,
+        geo: {
+          scope: 'India',
+          projection: {
+            type: 'albers India'
+          },
+          showland: true,
+          landcolor: 'rgb(217, 217, 217)',
+          subunitwidth: 1.5,
+          countrywidth: 1.5,
+          subunitcolor: 'rgb(255,255,255)',
+          countrycolor: 'rgb(255,255,255)'
+        },
+    };
+
+    Plotly.plot(usMap, data, layout, {showLink: false});
+});
+
+// ===================================================================
+
+// toggle for maps 
+jQuery(function () {
+    jQuery('#myTab a:last').tab('show')
+})
+
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+</script>
+<br><br>
+<br><br>
+
+
+<form action='/city_event_page' method='POST'>
+  <a href="/city_event_page/{{city.destination}}"><button type="button" class="btn btn-default btn-lg btn-block" id="eventButton">check out events in {{ city.destination }}</button>
+  
+  </a>
+</form>
+{% endblock %}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</body>
+</html>

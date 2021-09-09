@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flightplan Travel app</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Reenie+Beanie" rel="stylesheet">
+<style>
+#homepage-block{
+    background-color: rgb(236, 236, 236);
+    margin-left: 5%;
+}
+#homepage-title-small{
+    font-family: 'Reenie Beanie', cursive;
+    margin-left:5px;
+    font-size: 1em;
+}
+
+#homepageGreeting{
+    text-align: center;
+    
+}
+
+object{
+    position:relative;
+    left:25%;
+}
+
+form {
+    text-align: center;
+}
+
+#whereTo{
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+.destination{
+    font-size: 1.1em;
+    color: #000333;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+
+}
+
+#disabledInput{
+    width: 15%;
+}
+
+#homepageSubmit{
+    background-color:orange;
+    color:white;
+    width:10%;
+}
+
+</style>
+</head>
+<body>
+    <div id="homepage-block">
+        <h1 id="homepage-title">Flite <small id="homepage-title-small">Reasonable prices, Best prices</small></h1>
+        <p style="font-style: italic;">discover destinations from Kochi, India</p>
+        <br>
+    </div>
+        <br>
+    <object><iframe src=" " id="homepageVideo" width="740" height="417" frameborder="0"></iframe></object><br><br>
+
+
+<div class="jumbotron">
+<p id="homepageGreeting"> Search for the best deals</p>
+<form action='/city_page' method='POST' class="form-inline" class=homeCitySearch>
+    <div class="form-group">
+    <label for="destination" id="whereTo">Where to?:</label> 
+    <input list="destination" class="form-group" name="destination" placeholder="city name" style="background-color:white; width:250px; height: 30px;">
+          <datalist class="destination">
+                <option value="Jammu" name="destination">
+                <option value="Jaipur" name="destination">
+                <option value="Chennai" name="destination">
+                <option value="Ladhak" name="destination">
+                <option value="Shimla" name="destination">
+                <option value="Chandigarh" name="destination">
+                <option value="Ahemdabad" name="destination">
+                <option value="Hyderabad" name="destination">
+                <option value="Panaji" name="destination">
+                <option value="Indore" name="destination">
+                <option value="Bhopal" name="destination">
+                <option value="Port Blair" name="destination">  
+                <option value="Banglore" name="destination"> 
+                <option value="New Delhi" name="destination">
+                <option value="Vishakhapatnam" name="destination">
+                <option value="Dehradun" name="destination">
+                <option value="Mumbai" name="destination">
+                <option value="Ranchi" name="destination">
+                <option value="Guwahati" name="destination">
+                <option value="Pune" name="destination">
+                <option value="Lucknow" name="destination">
+                <option value="Bhubaneshwar" name="destination">
+                <option value="Surat" name="destination">            
+                <option value="Kolkata" name="destination">
+                <option value="Raipur" name="destination">
+          </datalist>
+    </div>
+    <input class="form-group" class="form-control" id="disabledInput" type="text" placeholder="Sept 20 - Sept 30, 2020" disabled style="height: 30px;">
+    <input type="submit" id="homepageSubmit" class="btn btn-default">
+</form>
+</div>
+
+
+
+
+{% endblock %}
+
